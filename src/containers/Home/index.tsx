@@ -32,6 +32,8 @@ const Home: React.FC = () => {
     setDices({ dice1, dice2 });
 
     if (dicesResult === 12) {
+      alert("It's a double six! Next player turn");
+      setDices({ dice1: null, dice2: null });
       onSwitchPlayer();
     } else {
       setPlayers((prev) => ({
