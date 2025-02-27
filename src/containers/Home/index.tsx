@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import Dice from "../../components/Dice";
 import Player from "../../components/Player";
@@ -17,6 +17,12 @@ const Home: React.FC = () => {
     1: { totalScore: 0, currentScore: 0 },
     2: { totalScore: 0, currentScore: 0 },
   });
+  const [playerWins, setPlayerWins] = useState<{ [key: number]: number }>({});
+
+  useEffect(() => {
+    const storedWins = JSON.parse(localStorage.getItem("playerWins") || "{}");
+    setPlayerWins(storedWins);
+  }, []);
 
   const onRoll = () => {
     const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -42,10 +48,22 @@ const Home: React.FC = () => {
           dicesResult >=
         winScore
       ) {
+        updatePlayerWins(togglePlayer);
         alert(`Player ${togglePlayer} wins!`);
         resetGame();
       }
     }
+  };
+
+  const updatePlayerWins = (player: number) => {
+    setPlayerWins((prevWins) => {
+      const updatedWins = {
+        ...prevWins,
+        [player]: (prevWins[player] || 0) + 1,
+      };
+      localStorage.setItem("playerWins", JSON.stringify(updatedWins));
+      return updatedWins;
+    });
   };
 
   const onHold = () => {
@@ -85,6 +103,12 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
+      <h1 className="game-title">DICE GAME</h1>
+      <div>
+        <h2>Players Wins:</h2>
+        <p>Player 1: {playerWins[1] || 0} wins</p>
+        <p>Player 2: {playerWins[2] || 0} wins</p>
+      </div>
       <div className="new-game-container">
         <Button onClick={resetGame} label={"+ NEW GAME"} />
       </div>
